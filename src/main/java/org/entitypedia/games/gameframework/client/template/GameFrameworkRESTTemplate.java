@@ -7,9 +7,11 @@ import org.entitypedia.games.common.exceptions.WordGameException;
 import org.entitypedia.games.common.model.ResultsPage;
 import org.entitypedia.games.gameframework.client.IGameFrameworkClient;
 import org.entitypedia.games.gameframework.common.api.IClueAPI;
+import org.entitypedia.games.gameframework.common.api.IFeedbackAPI;
 import org.entitypedia.games.gameframework.common.api.IPlayerAPI;
 import org.entitypedia.games.gameframework.common.api.IWordAPI;
 import org.entitypedia.games.gameframework.common.model.Clue;
+import org.entitypedia.games.gameframework.common.model.Feedback;
 import org.entitypedia.games.gameframework.common.model.Player;
 import org.entitypedia.games.gameframework.common.model.Word;
 import org.slf4j.Logger;
@@ -62,6 +64,8 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements Init
     private static final ParameterizedTypeReference<ResultsPage<Word>> WORDS_RP_TYPE_REFERENCE = new ParameterizedTypeReference<ResultsPage<Word>>() {
     };
     private static final ParameterizedTypeReference<ResultsPage<Clue>> CLUES_RP_TYPE_REFERENCE = new ParameterizedTypeReference<ResultsPage<Clue>>() {
+    };
+    private static final ParameterizedTypeReference<Feedback> FEEDBACK_TYPE_REFERENCE = new ParameterizedTypeReference<Feedback>() {
     };
 
     private OAuthConsumerTokenServices tokenServices;
@@ -433,5 +437,44 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements Init
     @Override
     public void setSignConnection(boolean signConnection) {
         // nop
+    }
+
+    @Override
+    public Feedback createFeedback(long clueID) {
+        try {
+            ResponseEntity<Feedback> responseEntity = exchange(
+                    new URI(frameworkAPIRoot + IFeedbackAPI.CREATE_FEEDBACK + "?clueID=" + Long.toString(clueID)),
+                    HttpMethod.POST, HttpEntity.EMPTY, FEEDBACK_TYPE_REFERENCE);
+            return responseEntity.getBody();
+        } catch (URISyntaxException e) {
+            throw new WordGameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void postFeedback(long feedbackID, int attributePosition, String attributeValue, String comment) {
+        try {
+            String url = frameworkAPIRoot + IFeedbackAPI.POST_FEEDBACK + "?feedbackID=" + Long.toString(feedbackID)
+                    + "&attributePosition=" + Integer.toString(attributePosition);
+            if (null != attributeValue) {
+                url = url + "&attributeValue=" + URLEncoder.encode(attributeValue, "UTF-8");
+            }
+            if (null != comment) {
+                url = url + "&comment=" + URLEncoder.encode(comment, "UTF-8");
+            }
+
+            postForObject(new URI(url), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new WordGameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void cancelFeedback(long feedbackID) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IFeedbackAPI.CANCEL_FEEDBACK + "?feedbackID=" + Long.toString(feedbackID)), null, Void.class);
+        } catch (URISyntaxException e) {
+            throw new WordGameException(e.getMessage(), e);
+        }
     }
 }
