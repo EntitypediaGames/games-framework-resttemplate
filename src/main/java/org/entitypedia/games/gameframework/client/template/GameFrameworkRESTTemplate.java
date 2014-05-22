@@ -477,4 +477,14 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements Init
             throw new WordGameException(e.getMessage(), e);
         }
     }
+
+    @Override
+    public void confirmClue(long clueID, double confidence) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IFeedbackAPI.CONFIRM_CLUE + "?clueID=" + Long.toString(clueID))
+                    + "&confidence=" + Double.toString(confidence), null, Void.class);
+        } catch (URISyntaxException e) {
+            throw new WordGameException(e.getMessage(), e);
+        }
+    }
 }
