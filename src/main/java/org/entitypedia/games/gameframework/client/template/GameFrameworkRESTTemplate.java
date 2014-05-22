@@ -16,7 +16,6 @@ import org.entitypedia.games.gameframework.common.model.Player;
 import org.entitypedia.games.gameframework.common.model.Word;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -34,6 +33,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -47,7 +47,7 @@ import java.util.TreeMap;
  *
  * @author <a rel="author" href="http://autayeu.com/">Aliaksandr Autayeu</a>
  */
-public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements InitializingBean, IGameFrameworkClient {
+public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGameFrameworkClient {
 
     private static final Logger log = LoggerFactory.getLogger(GameFrameworkRESTTemplate.class);
 
@@ -123,7 +123,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements Init
         this.tokenServices = tokenServices;
     }
 
-    @Override
+    @PostConstruct
     public void afterPropertiesSet() throws Exception {
         setErrorHandler(responseErrorHandler);
         setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
