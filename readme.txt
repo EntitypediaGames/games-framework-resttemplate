@@ -1,1 +1,0 @@
-This folder contains Entitypedia Games Framework Java Client for Server side.

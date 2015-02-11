@@ -5,69 +5,52 @@
     <parent>
         <groupId>org.entitypedia.games</groupId>
         <artifactId>entitypedia-games-parent</artifactId>
-        <version>13</version>
+        <version>14-SNAPSHOT</version>
     </parent>
 
-    <artifactId>game-framework-client-template</artifactId>
+    <artifactId>entitypedia-games-framework-resttemplate</artifactId>
     <packaging>jar</packaging>
     <version>1.0.6-SNAPSHOT</version>
 
-    <name>Entitypedia Games Framework Client Template</name>
-    <description>Entitypedia Games Framework Java Client for Server side</description>
-    <url>http://games.entitypedia.org/</url>
+    <name>Entitypedia Games Framework REST Template Client</name>
+    <description>Entitypedia Games Framework REST Template Client for server side</description>
+    <url>https://github.com/EntitypediaGames/games-framework-resttemplate</url>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://github.com/EntitypediaGames/games-framework-resttemplate/blob/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <scm>
-        <connection>scm:svn:https://dev.entitypedia.org/svn/entitypedia/apps/word-games-framework-client-template/trunk</connection>
-        <developerConnection>scm:svn:https://dev.entitypedia.org/svn/entitypedia/apps/word-games-framework-client-template/trunk</developerConnection>
-        <url>https://dev.entitypedia.org/svn/entitypedia/apps/word-games-framework-client-template/</url>
+        <connection>scm:git:https://github.com/EntitypediaGames/games-framework-resttemplate.git</connection>
+        <developerConnection>scm:git:git@github.com:EntitypediaGames/games-framework-resttemplate.git</developerConnection>
+        <url>https://github.com/EntitypediaGames/games-framework-resttemplate</url>
     </scm>
 
-    <repositories>
-        <repository>
-            <id>entitypedia</id>
-            <layout>default</layout>
-            <name>Entitypedia Maven Repository</name>
-            <url>https://dev.entitypedia.org/archiva/repository/internal/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>entitypedia-snapshots</id>
-            <layout>default</layout>
-            <name>Entitypedia Maven Snapshot Repository</name>
-            <url>https://dev.entitypedia.org/archiva/repository/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/EntitypediaGames/games-framework-resttemplate/issues</url>
+    </issueManagement>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>entitypedia-games-client</artifactId>
-            <version>1.0.13</version>
+            <artifactId>entitypedia-games-common-client</artifactId>
+            <version>1.0.14-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>game-framework-common</artifactId>
-            <version>1.0.14</version>
+            <artifactId>entitypedia-games-framework-common</artifactId>
+            <version>1.0.15-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>game-framework-client</artifactId>
-            <version>1.0.15</version>
+            <artifactId>entitypedia-games-framework-client</artifactId>
+            <version>1.0.16-SNAPSHOT</version>
         </dependency>
 
         <!-- spring dependencies -->
@@ -148,44 +131,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

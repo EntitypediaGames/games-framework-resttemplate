@@ -2,10 +2,10 @@ package org.entitypedia.games.gameframework.client.template;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.HttpClient;
-import org.entitypedia.games.common.client.WordGameClient;
-import org.entitypedia.games.common.exceptions.WordGameException;
+import org.entitypedia.games.common.client.GamesCommonClient;
+import org.entitypedia.games.common.exceptions.GameException;
 import org.entitypedia.games.common.model.ResultsPage;
-import org.entitypedia.games.gameframework.client.IGameFrameworkClient;
+import org.entitypedia.games.gameframework.client.IGamesFrameworkClient;
 import org.entitypedia.games.gameframework.common.api.IClueAPI;
 import org.entitypedia.games.gameframework.common.api.IFeedbackAPI;
 import org.entitypedia.games.gameframework.common.api.IPlayerAPI;
@@ -45,11 +45,11 @@ import java.util.TreeMap;
 /**
  * Extends OAuthRestTemplate with proper authentication use.
  *
- * @author <a rel="author" href="http://autayeu.com/">Aliaksandr Autayeu</a>
+ * @author <a href="http://autayeu.com/">Aliaksandr Autayeu</a>
  */
-public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGameFrameworkClient {
+public class GamesFrameworkRESTTemplate extends OAuthRestTemplate implements IGamesFrameworkClient {
 
-    private static final Logger log = LoggerFactory.getLogger(GameFrameworkRESTTemplate.class);
+    private static final Logger log = LoggerFactory.getLogger(GamesFrameworkRESTTemplate.class);
 
     // nice... type erasure leads to the necessity to reimplement super type tokens
     // by every decent library following the same Neal Gafter's solution
@@ -78,7 +78,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
 
     private ResponseErrorHandler responseErrorHandler = new ThrowingResponseErrorHandler();
 
-    public GameFrameworkRESTTemplate(ProtectedResourceDetails resource) {
+    public GamesFrameworkRESTTemplate(ProtectedResourceDetails resource) {
         super(resource);
         this.resource = resource;
     }
@@ -140,7 +140,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
 
         @Override
         public void handleError(ClientHttpResponse response) throws IOException {
-            throw WordGameClient.processError(response.getBody(), mapper);
+            throw GamesCommonClient.processError(response.getBody(), mapper);
         }
     }
 
@@ -176,7 +176,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
                     HttpMethod.GET, HttpEntity.EMPTY, CLUE_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -184,13 +184,13 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
     public ResultsPage<Clue> listClues(Integer pageSize, Integer pageNo, String filter, String order) {
         try {
             ResponseEntity<ResultsPage<Clue>> responseEntity = exchange(
-                    new URI(WordGameClient.addPageSizeAndNoAndFilterAndOrder(
+                    new URI(GamesCommonClient.addPageSizeAndNoAndFilterAndOrder(
                             frameworkAPIRoot + IClueAPI.LIST_CLUES + "?", pageSize, pageNo,
                             URLEncoder.encode(filter, "UTF-8"), order)),
                     HttpMethod.GET, HttpEntity.EMPTY, CLUES_RP_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -199,7 +199,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
         try {
             getForObject(new URI(frameworkAPIRoot + IPlayerAPI.LOGIN_PLAYER), Void.class);
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -212,7 +212,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
                     HttpMethod.POST, HttpEntity.EMPTY, PLAYER_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -224,7 +224,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
                     HttpMethod.POST, HttpEntity.EMPTY, PLAYER_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -234,7 +234,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkAPIRoot + IPlayerAPI.ACTIVATE_PLAYER_EMAIL + "?code=" +
                     URLEncoder.encode(code, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -243,7 +243,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
         try {
             postForObject(new URI(frameworkAPIRoot + IPlayerAPI.REQUEST_PLAYER_EMAIL_ACTIVATION), null, Void.class);
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -253,7 +253,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkSecureAPIRoot + IPlayerAPI.RESET_PLAYER_PASSWORD + "?code=" +
                     URLEncoder.encode(code, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -263,7 +263,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkAPIRoot + IPlayerAPI.REQUEST_PLAYER_PASSWORD_RESET + "?email=" +
                     URLEncoder.encode(email, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -275,7 +275,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
                     HttpMethod.POST, new HttpEntity<>(player), PLAYER_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -287,7 +287,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
                     HttpMethod.GET, HttpEntity.EMPTY, PLAYER_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -299,7 +299,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
                     HttpMethod.GET, HttpEntity.EMPTY, PLAYER_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -309,7 +309,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkAPIRoot + IPlayerAPI.DELETE_PLAYER + "?playerID=" + Long.toString(playerID)),
                     null, Void.class);
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -318,7 +318,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
         try {
             postForObject(new URI(frameworkSecureAPIRoot + IPlayerAPI.UPDATE_PLAYER), player, Void.class);
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -328,7 +328,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkSecureAPIRoot + IPlayerAPI.UPDATE_PLAYER_PASSWORD + "?playerID=" + Long.toString(playerID)
                     + "&password=" + URLEncoder.encode(password, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -338,7 +338,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkSecureAPIRoot + IPlayerAPI.UPDATE_PLAYER_EMAIL + "?playerID=" + Long.toString(playerID)
                     + "&email=" + URLEncoder.encode(email, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -348,7 +348,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkAPIRoot + IPlayerAPI.UPDATE_PLAYER_FIRST_NAME + "?playerID=" + Long.toString(playerID)
                     + "&firstName=" + URLEncoder.encode(firstName, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -358,7 +358,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkAPIRoot + IPlayerAPI.UPDATE_PLAYER_LAST_NAME + "?playerID=" + Long.toString(playerID)
                     + "&lastName=" + URLEncoder.encode(lastName, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -368,7 +368,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkAPIRoot + IPlayerAPI.UPDATE_PLAYER_FACEBOOK + "?playerID=" + Long.toString(playerID)
                     + "&token=" + URLEncoder.encode(token, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -378,7 +378,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkAPIRoot + IPlayerAPI.UPDATE_PLAYER_GPLUS + "?playerID=" + Long.toString(playerID)
                     + "&code=" + URLEncoder.encode(code, "UTF-8")), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -386,11 +386,11 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
     public ResultsPage<Player> listPlayers(Integer pageSize, Integer pageNo) {
         try {
             ResponseEntity<ResultsPage<Player>> responseEntity = exchange(
-                    new URI(WordGameClient.addPageSizeAndNo(frameworkAPIRoot + IPlayerAPI.LIST_PLAYERS + "?", pageSize, pageNo)),
+                    new URI(GamesCommonClient.addPageSizeAndNo(frameworkAPIRoot + IPlayerAPI.LIST_PLAYERS + "?", pageSize, pageNo)),
                     HttpMethod.GET, HttpEntity.EMPTY, PLAYERS_RP_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -402,7 +402,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
                     HttpMethod.GET, HttpEntity.EMPTY, WORD_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -410,12 +410,12 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
     public ResultsPage<Word> listWords(Integer pageSize, Integer pageNo, String filter, String order) {
         try {
             ResponseEntity<ResultsPage<Word>> responseEntity = exchange(
-                    new URI(WordGameClient.addPageSizeAndNoAndFilterAndOrder(frameworkAPIRoot +
+                    new URI(GamesCommonClient.addPageSizeAndNoAndFilterAndOrder(frameworkAPIRoot +
                             IWordAPI.LIST_WORDS + "?", pageSize, pageNo, URLEncoder.encode(filter, "UTF-8"), order)),
                     HttpMethod.GET, HttpEntity.EMPTY, WORDS_RP_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -447,7 +447,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
                     HttpMethod.POST, HttpEntity.EMPTY, FEEDBACK_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -465,7 +465,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
 
             postForObject(new URI(url), null, Void.class);
         } catch (URISyntaxException | UnsupportedEncodingException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -474,7 +474,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
         try {
             postForObject(new URI(frameworkAPIRoot + IFeedbackAPI.CANCEL_FEEDBACK + "?feedbackID=" + Long.toString(feedbackID)), null, Void.class);
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 
@@ -484,7 +484,7 @@ public class GameFrameworkRESTTemplate extends OAuthRestTemplate implements IGam
             postForObject(new URI(frameworkAPIRoot + IFeedbackAPI.CONFIRM_CLUE + "?clueID=" + Long.toString(clueID))
                     + "&confidence=" + Double.toString(confidence), null, Void.class);
         } catch (URISyntaxException e) {
-            throw new WordGameException(e.getMessage(), e);
+            throw new GameException(e.getMessage(), e);
         }
     }
 }
