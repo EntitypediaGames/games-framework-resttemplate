@@ -6,14 +6,8 @@ import org.entitypedia.games.common.client.GamesCommonClient;
 import org.entitypedia.games.common.exceptions.GameException;
 import org.entitypedia.games.common.model.ResultsPage;
 import org.entitypedia.games.gameframework.client.IGamesFrameworkClient;
-import org.entitypedia.games.gameframework.common.api.IClueAPI;
-import org.entitypedia.games.gameframework.common.api.IFeedbackAPI;
-import org.entitypedia.games.gameframework.common.api.IPlayerAPI;
-import org.entitypedia.games.gameframework.common.api.IWordAPI;
-import org.entitypedia.games.gameframework.common.model.Clue;
-import org.entitypedia.games.gameframework.common.model.Feedback;
-import org.entitypedia.games.gameframework.common.model.Player;
-import org.entitypedia.games.gameframework.common.model.Word;
+import org.entitypedia.games.gameframework.common.api.*;
+import org.entitypedia.games.gameframework.common.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -66,6 +60,10 @@ public class GamesFrameworkRESTTemplate extends OAuthRestTemplate implements IGa
     private static final ParameterizedTypeReference<ResultsPage<Clue>> CLUES_RP_TYPE_REFERENCE = new ParameterizedTypeReference<ResultsPage<Clue>>() {
     };
     private static final ParameterizedTypeReference<Feedback> FEEDBACK_TYPE_REFERENCE = new ParameterizedTypeReference<Feedback>() {
+    };
+    private static final ParameterizedTypeReference<ClueTemplate> CLUE_TEMPLATE_TYPE_REFERENCE = new ParameterizedTypeReference<ClueTemplate>() {
+    };
+    private static final ParameterizedTypeReference<ResultsPage<ClueTemplate>> CLUE_TEMPLATES_RP_TYPE_REFERENCE = new ParameterizedTypeReference<ResultsPage<ClueTemplate>>() {
     };
 
     private OAuthConsumerTokenServices tokenServices;
@@ -484,6 +482,32 @@ public class GamesFrameworkRESTTemplate extends OAuthRestTemplate implements IGa
             postForObject(new URI(frameworkAPIRoot + IFeedbackAPI.CONFIRM_CLUE + "?clueID=" + Long.toString(clueID))
                     + "&confidence=" + Double.toString(confidence), null, Void.class);
         } catch (URISyntaxException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ClueTemplate readClueTemplate(long clueTemplateID) {
+        try {
+            ResponseEntity<ClueTemplate> responseEntity = exchange(
+                    new URI(frameworkAPIRoot + IClueTemplateAPI.READ_CLUE_TEMPLATE.replaceAll("\\{.*\\}", Long.toString(clueTemplateID))),
+                    HttpMethod.GET, HttpEntity.EMPTY, CLUE_TEMPLATE_TYPE_REFERENCE);
+            return responseEntity.getBody();
+        } catch (URISyntaxException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResultsPage<ClueTemplate> listClueTemplates(Integer pageSize, Integer pageNo, String filter, String order) {
+        try {
+            ResponseEntity<ResultsPage<ClueTemplate>> responseEntity = exchange(
+                    new URI(GamesCommonClient.addPageSizeAndNoAndFilterAndOrder(
+                            frameworkAPIRoot + IClueTemplateAPI.LIST_CLUE_TEMPLATES + "?", pageSize, pageNo,
+                            URLEncoder.encode(filter, "UTF-8"), order)),
+                    HttpMethod.GET, HttpEntity.EMPTY, CLUE_TEMPLATES_RP_TYPE_REFERENCE);
+            return responseEntity.getBody();
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
             throw new GameException(e.getMessage(), e);
         }
     }
