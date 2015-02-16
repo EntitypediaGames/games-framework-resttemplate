@@ -65,6 +65,10 @@ public class GamesFrameworkRESTTemplate extends OAuthRestTemplate implements IGa
     };
     private static final ParameterizedTypeReference<ResultsPage<ClueTemplate>> CLUE_TEMPLATES_RP_TYPE_REFERENCE = new ParameterizedTypeReference<ResultsPage<ClueTemplate>>() {
     };
+    private static final ParameterizedTypeReference<Developer> DEVELOPER_TYPE_REFERENCE = new ParameterizedTypeReference<Developer>() {
+    };
+    private static final ParameterizedTypeReference<ResultsPage<Developer>> DEVELOPERS_RP_TYPE_REFERENCE = new ParameterizedTypeReference<ResultsPage<Developer>>() {
+    };
 
     private OAuthConsumerTokenServices tokenServices;
     private ProtectedResourceDetails resource;
@@ -506,6 +510,100 @@ public class GamesFrameworkRESTTemplate extends OAuthRestTemplate implements IGa
                             frameworkAPIRoot + IClueTemplateAPI.LIST_CLUE_TEMPLATES + "?", pageSize, pageNo,
                             URLEncoder.encode(filter, "UTF-8"), order)),
                     HttpMethod.GET, HttpEntity.EMPTY, CLUE_TEMPLATES_RP_TYPE_REFERENCE);
+            return responseEntity.getBody();
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void loginDeveloper() {
+        try {
+            getForObject(new URI(frameworkAPIRoot + IDeveloperAPI.LOGIN_DEVELOPER), Void.class);
+        } catch (URISyntaxException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Developer readDeveloper(long developerID) {
+        try {
+            ResponseEntity<Developer> responseEntity = exchange(
+                    new URI(frameworkAPIRoot + IDeveloperAPI.READ_DEVELOPER.replaceAll("\\{.*\\}", Long.toString(developerID))),
+                    HttpMethod.GET, HttpEntity.EMPTY, DEVELOPER_TYPE_REFERENCE);
+            return responseEntity.getBody();
+        } catch (URISyntaxException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void resetDeveloperPassword(String code, String password) {
+        try {
+            postForObject(new URI(frameworkSecureAPIRoot + IDeveloperAPI.RESET_DEVELOPER_PASSWORD + "?code=" +
+                    URLEncoder.encode(code, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void requestDeveloperPasswordReset(String email) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IDeveloperAPI.REQUEST_DEVELOPER_PASSWORD_RESET + "?email=" +
+                    URLEncoder.encode(email, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateDeveloperPassword(long developerID, String password) {
+        try {
+            postForObject(new URI(frameworkSecureAPIRoot + IDeveloperAPI.UPDATE_DEVELOPER_PASSWORD + "?developerID=" + Long.toString(developerID)
+                    + "&password=" + URLEncoder.encode(password, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateDeveloperEmail(long developerID, String email) {
+        try {
+            postForObject(new URI(frameworkSecureAPIRoot + IDeveloperAPI.UPDATE_DEVELOPER_EMAIL + "?developerID=" + Long.toString(developerID)
+                    + "&email=" + URLEncoder.encode(email, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateDeveloperFirstName(long developerID, String firstName) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IDeveloperAPI.UPDATE_DEVELOPER_FIRST_NAME + "?developerID=" + Long.toString(developerID)
+                    + "&firstName=" + URLEncoder.encode(firstName, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateDeveloperLastName(long developerID, String lastName) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IDeveloperAPI.UPDATE_DEVELOPER_LAST_NAME + "?developerID=" + Long.toString(developerID)
+                    + "&lastName=" + URLEncoder.encode(lastName, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResultsPage<Developer> listDevelopers(Integer pageSize, Integer pageNo, String filter, String order) {
+        try {
+            ResponseEntity<ResultsPage<Developer>> responseEntity = exchange(
+                    new URI(GamesCommonClient.addPageSizeAndNoAndFilterAndOrder(frameworkAPIRoot +
+                            IDeveloperAPI.LIST_DEVELOPERS + "?", pageSize, pageNo, URLEncoder.encode(filter, "UTF-8"), order)),
+                    HttpMethod.GET, HttpEntity.EMPTY, DEVELOPERS_RP_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException | UnsupportedEncodingException e) {
             throw new GameException(e.getMessage(), e);
