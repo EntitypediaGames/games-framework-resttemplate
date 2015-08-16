@@ -69,6 +69,10 @@ public class GamesFrameworkRESTTemplate extends OAuthRestTemplate implements IGa
     };
     private static final ParameterizedTypeReference<ResultsPage<Developer>> DEVELOPERS_RP_TYPE_REFERENCE = new ParameterizedTypeReference<ResultsPage<Developer>>() {
     };
+    private static final ParameterizedTypeReference<Game> GAME_TYPE_REFERENCE = new ParameterizedTypeReference<Game>() {
+    };
+    private static final ParameterizedTypeReference<ResultsPage<Game>> GAMES_RP_TYPE_REFERENCE = new ParameterizedTypeReference<ResultsPage<Game>>() {
+    };
 
     private OAuthConsumerTokenServices tokenServices;
     private ProtectedResourceDetails resource;
@@ -606,6 +610,135 @@ public class GamesFrameworkRESTTemplate extends OAuthRestTemplate implements IGa
                     HttpMethod.GET, HttpEntity.EMPTY, DEVELOPERS_RP_TYPE_REFERENCE);
             return responseEntity.getBody();
         } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Game createGame() {
+        try {
+            ResponseEntity<Game> responseEntity = exchange(
+                    new URI(frameworkAPIRoot + IGameAPI.CREATE_GAME),
+                    HttpMethod.POST, HttpEntity.EMPTY, GAME_TYPE_REFERENCE);
+            return responseEntity.getBody();
+        } catch (URISyntaxException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Game readGame(long gameID) {
+        try {
+            ResponseEntity<Game> responseEntity = exchange(
+                    new URI(frameworkAPIRoot + IGameAPI.READ_GAME.replaceAll("\\{.*\\}", Long.toString(gameID))),
+                    HttpMethod.GET, HttpEntity.EMPTY, GAME_TYPE_REFERENCE);
+            return responseEntity.getBody();
+        } catch (URISyntaxException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateGameTitle(long gameID, String title) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.UPDATE_GAME_TITLE + "?gameID=" + Long.toString(gameID)
+                    + "&title=" + URLEncoder.encode(title, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateGameDescription(long gameID, String description) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.UPDATE_GAME_DESCRIPTION + "?gameID=" + Long.toString(gameID)
+                    + "&description=" + URLEncoder.encode(description, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateGameURL(long gameID, String url) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.UPDATE_GAME_URL + "?gameID=" + Long.toString(gameID)
+                    + "&url=" + URLEncoder.encode(url, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateGameLogoURL(long gameID, String url) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.UPDATE_GAME_LOGO_URL + "?gameID=" + Long.toString(gameID)
+                    + "&url=" + URLEncoder.encode(url, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateGameSliderURL(long gameID, String url) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.UPDATE_GAME_SLIDER_URL + "?gameID=" + Long.toString(gameID)
+                    + "&url=" + URLEncoder.encode(url, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateGameOAuthCallbackURL(long gameID, String url) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.UPDATE_GAME_OAUTH_CALLBACK_URL + "?gameID=" + Long.toString(gameID)
+                    + "&url=" + URLEncoder.encode(url, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+
+    }
+
+    @Override
+    public void updateGameOAuthSecret(long gameID, String secret) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.UPDATE_GAME_OAUTH_SECRET + "?gameID=" + Long.toString(gameID)
+                    + "&secret=" + URLEncoder.encode(secret, "UTF-8")), null, Void.class);
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+
+    }
+
+    @Override
+    public void updateGameProduction(long gameID, boolean production) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.UPDATE_GAME_PRODUCTION + "?gameID=" + Long.toString(gameID)
+                    + "&production=" + Boolean.toString(production)), null, Void.class);
+        } catch (URISyntaxException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+
+    }
+
+    @Override
+    public void deleteGame(long gameID) {
+        try {
+            postForObject(new URI(frameworkAPIRoot + IGameAPI.DELETE_GAME + "?gameID=" + Long.toString(gameID)),
+                    null, Void.class);
+        } catch (URISyntaxException e) {
+            throw new GameException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ResultsPage<Game> listGames(Integer pageSize, Integer pageNo) {
+        try {
+            ResponseEntity<ResultsPage<Game>> responseEntity = exchange(
+                    new URI(GamesCommonClient.addPageSizeAndNo(frameworkAPIRoot + IGameAPI.LIST_GAMES + "?", pageSize, pageNo)),
+                    HttpMethod.GET, HttpEntity.EMPTY, GAMES_RP_TYPE_REFERENCE);
+            return responseEntity.getBody();
+        } catch (URISyntaxException e) {
             throw new GameException(e.getMessage(), e);
         }
     }
