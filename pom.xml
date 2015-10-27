@@ -10,7 +10,7 @@
 
     <artifactId>entitypedia-games-framework-resttemplate</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.6</version>
+    <version>1.0.7-SNAPSHOT</version>
 
     <name>Entitypedia Games Framework REST Template Client</name>
     <description>Entitypedia Games Framework REST Template Client for server side</description>
@@ -27,7 +27,7 @@
         <connection>scm:git:https://github.com/EntitypediaGames/games-framework-resttemplate.git</connection>
         <developerConnection>scm:git:git@github.com:EntitypediaGames/games-framework-resttemplate.git</developerConnection>
         <url>https://github.com/EntitypediaGames/games-framework-resttemplate</url>
-      <tag>entitypedia-games-framework-resttemplate-1.0.6</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <issueManagement>
